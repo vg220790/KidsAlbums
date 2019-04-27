@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">KIDS ALBUMS</string>
+    <string name="booki">Kids Albums</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="kids_albums">Kids Albums</string>
+    <string name="skip">Skip</string>
+    <string name="login">Login</string>
+    <string name="id">Email</string>
+    <string name="full_name">Password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="forgot_password">Forgot Password ?</string>
+</resources>
