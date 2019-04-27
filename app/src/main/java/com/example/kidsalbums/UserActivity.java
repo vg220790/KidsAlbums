@@ -74,12 +74,11 @@ public class UserActivity extends AppCompatActivity {
         setObjects(intent);
         checkExternalStoragePermission();
 
-        /* We create a local folder where we'll move all the images we want to upload to Dropbox */
-
         String kindergartenAddress = currentUser.getKindergarten().getAddress();
         double lat = currentUser.getKindergarten().getLatitude();
         double lon = currentUser.getKindergarten().getLongitude();
         String userDetailsString  = kindergartenAddress + "_" + String.valueOf(lat) + "_" + String.valueOf(lon) + "_" + currentUser.getChild().getTag() + "_" + currentUser.getChild().getName() + "_" + currentUser.getPhoneNumber() + "_" + currentUser.getEmail();
+        sp.edit().putString("user_details",userDetailsString).apply();
 
         Data data = new Data.Builder()
                 .putString(BackgroundWorker.EXTRA_USER_DETAILS, userDetailsString).build();
@@ -90,7 +89,7 @@ public class UserActivity extends AppCompatActivity {
                 .build();
 
         /* this inits a periodicWorkRequest - a request for background worker to do every time interval (we set the interval) */
-        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(BackgroundWorker.class, 2, TimeUnit.MINUTES)
+        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(BackgroundWorker.class, 4, TimeUnit.MINUTES)
                 .setInputData(data)
                 .setConstraints(constraints)
                 .addTag("periodic_work")

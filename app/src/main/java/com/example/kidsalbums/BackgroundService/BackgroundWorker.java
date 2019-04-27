@@ -1,12 +1,14 @@
 package com.example.kidsalbums.BackgroundService;
 
 import android.content.ContentResolver;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.FileMetadata;
@@ -18,11 +20,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+
 
 import androidx.work.Data;
 import androidx.work.Worker;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class BackgroundWorker extends Worker {
 
@@ -33,13 +43,16 @@ public class BackgroundWorker extends Worker {
     public static double LATITUDE = 0.0;
     public static double LONGITUDE = 0.0;
     DropboxClient dropboxClient;
+    SharedPreferences sp;
 
     @NonNull
     @Override
     public Result doWork() {
 
+        sp = getApplicationContext().getSharedPreferences("CurrentSession", MODE_PRIVATE);
         Data d = getInputData();
         String ud = getInputData().getString(EXTRA_USER_DETAILS, "");
+        ud = sp.getString("user_details","");
         String address = getInputData().getString(EXTRA_ADDRESS, "");
 
         if( address!=null ){
@@ -58,7 +71,7 @@ public class BackgroundWorker extends Worker {
                 LONGITUDE = Double.valueOf(details[2]);
                 USER_DETAILS = details[3]+"_"+details[4]+"_"+details[5]+"_"+details[6];
                 collectRelevantPhotosAndUploadToDropbox();
-
+                updateLatestBackgroundScanDate();
                 Data output = new Data.Builder()
                         .putString(EXTRA_OUTPUT_MESSAGE, "I have come from MyWorker!")
                         .build();
@@ -82,6 +95,7 @@ public class BackgroundWorker extends Worker {
 
     public void collectRelevantPhotosToUploadFolder(ArrayList<String> cameraImagesPaths){
         ArrayList<String> uploadImagesPaths = new ArrayList<String>();
+
         for (String path: cameraImagesPaths) {
             //checks if image was taken near the kindergarten
             if(isRelevant(path)){
@@ -145,6 +159,31 @@ public class BackgroundWorker extends Worker {
 
             //location where photo was taken
             exif = new ExifInterface(imgPath);
+
+            /* we want to save the latest date that we scanned the camera photos
+             * so that next time background service will scan camera photos it will
+             * upload only new shot images */
+
+            /* if "last_date" is defined scan only relevant photos  */
+            sp.edit().putString("last_date","").apply();
+            if(!sp.getString("last_date","").equals("")){
+
+                /* compare latest date and image date */
+                String exifDateStr =  exif.getAttribute(ExifInterface.TAG_DATETIME);
+
+                if (exifDateStr != null){
+                    String inputString = (exifDateStr.split(" ")[0]).replace(":","-");
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date photoWasTakenDate = (Date) dateFormat.parse(inputString);
+                    Date latestBackgroundScanDate = (Date) dateFormat.parse(sp.getString("last_date",""));
+
+                    if(photoWasTakenDate.before(latestBackgroundScanDate)){
+                        return false;
+                    }
+                }
+            }
+
+            /* Compare kindergarten and image locations distances */
             double latB = 0.0;
             double longB = 0.0;
             try{
@@ -175,8 +214,17 @@ public class BackgroundWorker extends Worker {
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
         return false;
+    }
+
+    public void updateLatestBackgroundScanDate(){
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = df.format(c);
+        sp.edit().putString("last_date", formattedDate).apply();
     }
 
     //get all files from camera
