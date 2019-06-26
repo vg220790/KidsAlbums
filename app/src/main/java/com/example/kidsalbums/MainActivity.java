@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
 
-        //sp.edit().putBoolean("logged",false).apply();
+        sp.edit().putBoolean("logged",false).apply();
 
         //this code block enables to keep a user logged in
         if(sp.getBoolean("logged",false)){
