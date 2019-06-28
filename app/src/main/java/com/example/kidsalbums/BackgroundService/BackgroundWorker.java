@@ -117,6 +117,11 @@ public class BackgroundWorker extends Worker {
         String userCommentStr = "{\"Image Name\": \"" + imageName + "\", \"Author\": {\"child of author\": {\"tag number\": " + tag + ", \"name\": \"" + childName + "\", \"tagged\": 0}, \"author phone\": \"" + parentPhone + "\", \"author email\": \"" + parentEmail + "\"}}'";
         String bla = userCommentStr;
         exif.setAttribute(ExifInterface.TAG_USER_COMMENT, userCommentStr);
+        try {
+            exif.saveAttributes();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void uploadImageToDropbox(String path){

@@ -187,7 +187,8 @@ public class UserActivity extends AppCompatActivity {
             String userCommentStr = "{\"Image Name\": \"" + imageName + "\", \"Author\": {\"child of author\": {\"tag number\": " + tag + ", \"name\": \"" + childName + "\", \"tagged\": 1}, \"author phone\": \"" + parentPhone + "\", \"author email\": \"" + parentEmail + "\"}}'";
             String bla = userCommentStr;
             exif.setAttribute(ExifInterface.TAG_USER_COMMENT, userCommentStr);
-
+            exif.saveAttributes();
+            String bla2 = "";
         }catch (Exception ex){
             ex.printStackTrace();
         }
