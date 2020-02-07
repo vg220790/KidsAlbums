@@ -184,7 +184,7 @@ public class UserActivity extends AppCompatActivity {
             String parentPhone = currentUser.getPhoneNumber();
             String parentEmail = currentUser.getEmail();
 
-            String userCommentStr = "{\"Image Name\": \"" + imageName + "\", \"Author\": {\"child of author\": {\"tag number\": " + tag + ", \"name\": \"" + childName + "\", \"tagged\": 1}, \"author phone\": \"" + parentPhone + "\", \"author email\": \"" + parentEmail + "\"}}'";
+            String userCommentStr = "{\"image_name\": \"" + imageName + "\", \"author\": {\"child_of_author\": {\"tag_number\": " + tag + ", \"name\": \"" + childName + "\", \"tagged\": 1}, \"author_phone\": \"" + parentPhone + "\", \"author_email\": \"" + parentEmail + "\"}}";
             String bla = userCommentStr;
             exif.setAttribute(ExifInterface.TAG_USER_COMMENT, userCommentStr);
             exif.saveAttributes();

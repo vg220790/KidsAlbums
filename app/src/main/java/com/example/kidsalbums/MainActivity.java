@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
 
-        sp.edit().putBoolean("logged",false).apply();
+        //TODO: this is for debugging purposes. When we want the app to save the user logged in
+        //TODO  we leave this line as a comment. Otherwise we don't
+        //sp.edit().putBoolean("logged",false).apply();
 
         //this code block enables to keep a user logged in
         if(sp.getBoolean("logged",false)){

@@ -114,7 +114,7 @@ public class BackgroundWorker extends Worker {
         String parentPhone = userDetails[2];
         String parentEmail = userDetails[3];
 
-        String userCommentStr = "{\"Image Name\": \"" + imageName + "\", \"Author\": {\"child of author\": {\"tag number\": " + tag + ", \"name\": \"" + childName + "\", \"tagged\": 0}, \"author phone\": \"" + parentPhone + "\", \"author email\": \"" + parentEmail + "\"}}'";
+        String userCommentStr = "{\"image_name\": \"" + imageName + "\", \"author\": {\"child_of_author\": {\"tag_number\": " + tag + ", \"name\": \"" + childName + "\", \"tagged\": 0}, \"author_phone\": \"" + parentPhone + "\", \"author_email\": \"" + parentEmail + "\"}}";
         String bla = userCommentStr;
         exif.setAttribute(ExifInterface.TAG_USER_COMMENT, userCommentStr);
         try {
@@ -154,9 +154,15 @@ public class BackgroundWorker extends Worker {
             Location kindergarten_location = new Location("Kindergarten");
 
             ///////////////////
-            // set kindergarten location to Bar Giora 24, TLV
-            LATITUDE = 32.076010;
-            LONGITUDE = 34.776280;
+            // TODO: set kindergarten location to a custom location for debugging purposes
+
+            // Mivtza Kadesh 38, TLV (Afeka, Fikus building)
+             LATITUDE  = 32.113300;
+             LONGITUDE = 34.817928;
+
+            // Itzhak Sadeh 61, TLV
+            //LATITUDE = 32.064190;
+            //LONGITUDE = 34.794560;
             //////////////////
 
             kindergarten_location.setLatitude(LATITUDE);
@@ -170,7 +176,13 @@ public class BackgroundWorker extends Worker {
              * upload only new shot images */
 
             /* if "last_date" is defined scan only relevant photos  */
-            sp.edit().putString("last_date","").apply();
+            String lastDate = "";
+            try{
+                lastDate = sp.getString("last_date","");
+            }catch (Exception ex) {
+                sp.edit().putString("last_date","").apply();
+            }
+
             if(!sp.getString("last_date","").equals("")){
 
                 /* compare latest date and image date */
